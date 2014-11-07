@@ -1,4 +1,8 @@
 //---------------------------------------------------------------------------------
+//-注：以下的js方法都调用jquery提供的函数，要使用，一定要先导入jquery文件。
+
+
+//---------------------------------------------------------------------------------
 //-为字符串String赋予trim()方法
 //-注：nodejs是提供trim()方法的，直接调用就可以，前端则需要为String写一个trim（）方法
 String.prototype.trim=function() {  
@@ -92,3 +96,80 @@ function get_random_num(min, max) {
     var rand  = Math.random()
     return(min + Math.round(range * rand))
 }
+
+//---------------------------------------------------------------------------------------
+//-使textarea标签的placeholder属性在各个浏览器样式统一。
+//-注：在这里，你需要修改color等属性以符合需求。
+/*
+ * jQuery placeholder, fix for IE6,7,8,9
+ */
+var JPlaceHolder = {
+    //检测
+    _check : function(){
+        return 'placeholder' in document.createElement('textarea');
+    },
+    //初始化
+    init : function(){
+        if(!this._check()){
+            this.fix();
+        }
+    },
+    //修复
+    fix : function(){
+        jQuery(':input[placeholder]').each(function(index, element) {
+            var self = $(this), txt = self.attr('placeholder');
+            self.wrap($('<div></div>').css({position:'relative', zoom:'1', border:'none', background:'none', padding:'none', margin:'none'}));
+            var pos = self.position(), h = self.outerHeight(true), paddingleft = self.css('padding-left');
+            var holder = $('<span></span>').text(txt).css({position:'absolute', left:pos.left, top:pos.top, height:h, lienHeight:h, paddingLeft:paddingleft, color:'#855d22'}).appendTo(self.parent());
+            self.focusin(function(e) {
+                holder.hide();
+            }).focusout(function(e) {
+                if(!self.val()){
+                    holder.show();
+                }
+            });
+            holder.click(function(e) {
+                holder.hide();
+                self.focus();
+            });
+        });
+    }
+};
+//执行
+jQuery(function(){
+    JPlaceHolder.init();    
+});
+
+//----------------------------------------------------------------------------------------------
+//-实现复制文字到粘贴板功能。
+//-注：由于firefox不支持操作粘贴板，所以通过flash的复制功能来实现。
+//-在jade中引入script文件，需要放在调用zeroclipboard的script前面。 
+script(src='/javascripts/brotherhood/zeroclipboard.js')
+//-js文件中如下：
+//-按照需求，修改下面参数，提示信息，setMoviePath地址。
+$("#p_s_copy").click(function(event) {
+    event.preventDefault()
+    var value = $(".s_1_p2").html()                //获取需要复制的参数
+
+    if(window.clipboardData){
+        //针对ie
+        if (window.clipboardData.setData("Text",value)) {
+            alert("复制礼包号成功");               //提示信息
+        }
+        else {
+            alert("复制礼包号失败，请重新复制")      //提示信息
+        }
+
+        return;
+    }
+
+    var clip = new ZeroClipboard.Client();              //创建新的Zero Clipboard对象
+    ZeroClipboard.setMoviePath( '/javascripts/brotherhood/zeroclipboard.swf' );   //和html不在同一目录需设置setMoviePath
+    clip.setHandCursor( true );                        //设置鼠标移到复制框时的形状
+    clip.setCSSEffects( true );                            //启用css
+    clip.setText( value );
+    clip.addEventListener('complete', function (client, text) {
+      alert( "复制礼包号成功" );                                 //提示信息
+    });
+    clip.glue( $(this).attr("id") );
+})
