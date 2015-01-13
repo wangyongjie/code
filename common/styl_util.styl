@@ -43,3 +43,17 @@ li, ul
     .top
         height 711px
         background url($top) no-repeat top center
+        
+
+//---------------------------------------------------------------------------------
+//-table中的列自动换行
+//-注：为table添加类white-space
+.white-space {
+/* white-space: nowrap; */
+    white-space: pre-wrap;
+    word-break:break-all;
+}
+.white-space tr th,.white-space tr td {
+    min-width: 85px;
+    max-width: 400px;
+}
