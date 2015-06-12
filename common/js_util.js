@@ -98,6 +98,8 @@ function get_random_num(min, max) {
 }
 
 //---------------------------------------------------------------------------------------
+//-现状：由于placeholder是html5的新属性，可想而知，仅支持html5的浏览器才支持placeholder，
+//       目前最新的firefox、chrome、safari以及ie10都支持，ie6到ie9都不支持。
 //-使textarea标签的placeholder属性在各个浏览器样式统一。
 //-注：在这里，你需要修改color等属性以符合需求。
 /*
@@ -141,12 +143,13 @@ jQuery(function(){
 });
 
 //----------------------------------------------------------------------------------------------
-//-实现复制文字到粘贴板功能。
-//-注：由于firefox不支持操作粘贴板，所以通过flash的复制功能来实现。
+//-功能：实现复制文字到粘贴板功能。
+//-现状：由于firefox等非ie浏览器不支持操作粘贴板，所以通过flash的复制功能来实现。
+//-原理：用了一个透明的 Flash ，让其漂浮在按钮之上，这样点击的不是按钮而是 Flash ，也就可以使用 Flash 的复制功能了。 
 //-在jade中引入script文件，需要放在调用zeroclipboard的script前面。 
+//-相关链接 http://www.365mini.com/page/zeroclipboard-2_x-quick-start.htm
 script(src='/javascripts/brotherhood/zeroclipboard.js')
 //-js文件中如下：
-//-按照需求，修改下面参数，提示信息，setMoviePath地址。
 $("#p_s_copy").click(function(event) {
     event.preventDefault()
     var value = $(".s_1_p2").html()                //获取需要复制的参数
@@ -154,17 +157,17 @@ $("#p_s_copy").click(function(event) {
     if(window.clipboardData){
         //针对ie
         if (window.clipboardData.setData("Text",value)) {
-            alert("复制礼包号成功");               //提示信息
+            alert("复制礼包号成功");                   //提示信息
         }
         else {
-            alert("复制礼包号失败，请重新复制")      //提示信息
+            alert("复制礼包号失败，请重新复制")       //提示信息
         }
 
         return;
     }
 
     var clip = new ZeroClipboard.Client();              //创建新的Zero Clipboard对象
-    ZeroClipboard.setMoviePath( '/javascripts/brotherhood/zeroclipboard.swf' );   //和html不在同一目录需设置setMoviePath
+    ZeroClipboard.setMoviePath( '/javascripts/brotherhood/zeroclipboard.swf' );   //和js不在同一目录需设置setMoviePath
     clip.setHandCursor( true );                        //设置鼠标移到复制框时的形状
     clip.setCSSEffects( true );                            //启用css
     clip.setText( value );
