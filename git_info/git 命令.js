@@ -21,3 +21,10 @@ git reset --hard 版本号
 git branch 分支名
 删除分支
 git branch -d 分支名
+
+//查看分支提交记录
+git reflog
+
+
+//装git命令
+apt-get install git
